@@ -35,12 +35,12 @@ udp_server(u_long prog, int rdwr)
 		exit(2);
 	}
 #ifndef	NO_PORTMAPPER
-	(void)pmap_unset(prog, (u_long)1);
-	if (!pmap_set(prog, (u_long)1, (u_long)IPPROTO_UDP,
-	    (unsigned short)sockport(sock))) {
-		perror("pmap_set");
-		exit(5);
-	}
+	// (void)pmap_unset(prog, (u_long)1);
+	// if (!pmap_set(prog, (u_long)1, (u_long)IPPROTO_UDP,
+	//     (unsigned short)sockport(sock))) {
+	// 	perror("pmap_set");
+	// 	exit(5);
+	// }
 #endif
 	return (sock);
 }
@@ -51,7 +51,7 @@ udp_server(u_long prog, int rdwr)
 void
 udp_done(int prog)
 {
-	(void)pmap_unset((u_long)prog, (u_long)1);
+	// (void)pmap_unset((u_long)prog, (u_long)1);
 }
 
 /*
@@ -81,7 +81,7 @@ udp_connect(char *host, u_long prog, int rdwr)
 #ifdef	NO_PORTMAPPER
 	sin.sin_port = htons(prog);
 #else
-	port = pmap_getport(&sin, prog, (u_long)1, IPPROTO_UDP);
+	// port = pmap_getport(&sin, prog, (u_long)1, IPPROTO_UDP);
 	if (!port) {
 		perror("lib UDP: No port found");
 		exit(3);

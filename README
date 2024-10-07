@@ -21,3 +21,10 @@ It's a good idea to do several runs and compare the output like so
 	make rerun
 	make rerun
 	cd Results && make LIST=<your OS>/*
+
+# nosajmik edits
+
+Since this codebase is 20-something years old, of course it doesn't compile out of the box.
+I had to delete the `lat_rpc` test because it relies on SunRPC, which is completely obsolete.
+Some other remnants might require installing `libtirpc-dev` and then adding `/usr/include/tirpc`
+to the `C_INCLUDE_PATH` environment variable.
