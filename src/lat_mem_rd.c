@@ -91,7 +91,7 @@ int main(int ac, char **av)
 		for (i = optind + 1; i < ac; ++i)
 		{
 			stride = bytes(av[i]);
-			fprintf(stderr, "\"stride=%d\n", stride);
+			fprintf(stderr, "Stride: %d\n", stride);
 
 			// The inner loop is the array size.
 			for (range = LOWER; range <= len; range *= 2)
