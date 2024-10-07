@@ -50,7 +50,7 @@ main(int ac, char **av)
 		switch(c) {
 		case 'P':
 			parallel = atoi(optarg);
-			if (parallel <= 0) lmbench_usage(ac, av, usage);
+			if (parallel <= 0) return 0;
 			break;
 		case 'W':
 			warmup = atoi(optarg);
@@ -62,13 +62,13 @@ main(int ac, char **av)
 			state.num = bytes(optarg);
 			break;
 		default:
-			lmbench_usage(ac, av, usage);
+			return 0;
 			break;
 		}
 	}
 
 	if (optind + 1 != ac) {
-		lmbench_usage(ac, av, usage);
+		return 0;
 	}
 
 	if (streq("tcp", av[optind])) {
@@ -89,7 +89,7 @@ main(int ac, char **av)
 		sprintf(buf, "Select on %d fd's", state.num);
 		micro(buf, get_n());
 	} else {
-		lmbench_usage(ac, av, usage);
+		return 0;
 	}
 
 	exit(0);
@@ -164,7 +164,7 @@ doit(iter_t iterations, void * cookie)
 	state_t * 	state = (state_t *)cookie;
 	fd_set		nosave;
 	static struct timeval tv;
-	static count = 0;
+	static int count = 0;
 	
 	tv.tv_sec = 0;
 	tv.tv_usec = 0;

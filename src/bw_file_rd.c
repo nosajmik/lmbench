@@ -146,7 +146,7 @@ main(int ac, char **av)
 		switch(c) {
 		case 'P':
 			parallel = atoi(optarg);
-			if (parallel <= 0) lmbench_usage(ac, av, usage);
+			if (parallel <= 0) return 0;
 			break;
 		case 'W':
 			warmup = atoi(optarg);
@@ -158,13 +158,13 @@ main(int ac, char **av)
 			state.clone = 1;
 			break;
 		default:
-			lmbench_usage(ac, av, usage);
+			return 0;
 			break;
 		}
 	}
 
 	if (optind + 3 != ac) { /* should have three arguments left */
-		lmbench_usage(ac, av, usage);
+		return 0;
 	}
 
 	strcpy(state.filename,av[optind+2]);
@@ -186,7 +186,7 @@ main(int ac, char **av)
 	} else if (!strcmp("io_only", av[optind+1])) {
 		benchmp(init_open, time_io_only, cleanup,
 			0, parallel, warmup, repetitions, &state);
-	} else lmbench_usage(ac, av, usage);
+	} else return 0;
 	bandwidth(count, get_n() * parallel, 0);
 	return (0);
 }

@@ -1,5 +1,6 @@
 #include "bench.h"
 #include "lib_debug.h"
+#include <math.h>
 
 /*
  * return micro-seconds / iteration at the the fraction point.

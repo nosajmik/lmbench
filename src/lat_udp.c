@@ -75,18 +75,18 @@ main(int ac, char **av)
 		case 'm':
 			msize = atoi(optarg);
 			if (msize < sizeof(int)) {
-				lmbench_usage(ac, av, usage);
+				return 0;
 				msize = 4;
 			}
 			if (msize > MAX_MSIZE) {
-				lmbench_usage(ac, av, usage);
+				return 0;
 				msize = MAX_MSIZE;
 			}
 			break;
 		case 'P':
 			parallel = atoi(optarg);
 			if (parallel <= 0)
-				lmbench_usage(ac, av, usage);
+				return 0;
 			break;
 		case 'W':
 			warmup = atoi(optarg);
@@ -95,13 +95,13 @@ main(int ac, char **av)
 			repetitions = atoi(optarg);
 			break;
 		default:
-			lmbench_usage(ac, av, usage);
+			return 0;
 			break;
 		}
 	}
 
 	if (optind + 1 != ac) {
-		lmbench_usage(ac, av, usage);
+		return 0;
 	}
 
 	state.server = av[optind];

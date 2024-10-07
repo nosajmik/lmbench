@@ -81,13 +81,13 @@ main(int ac, char **av)
 			shutdown = 1;
 			break;
 		default:
-			lmbench_usage(ac, av, usage);
+			return 0;
 			break;
 		}
 	}
 	
 	if (optind >= ac || optind < ac - 2) {
-		lmbench_usage(ac, av, usage);
+		return 0;
 		exit(0);
 	}
 	server = av[optind++];

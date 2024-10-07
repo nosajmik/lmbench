@@ -410,7 +410,7 @@ main(int ac, char **av)
 			repetitions = atoi(optarg);
 			break;
 		default:
-			lmbench_usage(ac, av, usage);
+			return 0;
 			break;
 		}
 	}

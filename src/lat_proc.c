@@ -57,7 +57,7 @@ main(int ac, char **av)
 		switch(c) {
 		case 'P':
 			parallel = atoi(optarg);
-			if (parallel <= 0) lmbench_usage(ac, av, usage);
+			if (parallel <= 0) return 0;
 			break;
 		case 'W':
 			warmup = atoi(optarg);
@@ -66,13 +66,13 @@ main(int ac, char **av)
 			repetitions = atoi(optarg);
 			break;
 		default:
-			lmbench_usage(ac, av, usage);
+			return 0;
 			break;
 		}
 	}
 
 	if (optind + 1 != ac) { /* should have one argument left */
-		lmbench_usage(ac, av, usage);
+		return 0;
 	}
 
 	if (!strcmp("procedure", av[optind])) {
@@ -92,7 +92,7 @@ main(int ac, char **av)
 			warmup, repetitions, NULL);
 		micro(STATIC_PREFIX "Process fork+/bin/sh -c", get_n());
 	} else {
-		lmbench_usage(ac, av, usage);
+		return 0;
 	}
 	return(0);
 }

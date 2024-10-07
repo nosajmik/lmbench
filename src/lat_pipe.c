@@ -38,7 +38,7 @@ main(int ac, char **av)
 		switch(c) {
 		case 'P':
 			parallel = atoi(optarg);
-			if (parallel <= 0) lmbench_usage(ac, av, usage);
+			if (parallel <= 0) return 0;
 			break;
 		case 'W':
 			warmup = atoi(optarg);
@@ -47,12 +47,12 @@ main(int ac, char **av)
 			repetitions = atoi(optarg);
 			break;
 		default:
-			lmbench_usage(ac, av, usage);
+			return 0;
 			break;
 		}
 	}
 	if (optind < ac) {
-		lmbench_usage(ac, av, usage);
+		return 0;
 	}
 
 	state.pid = 0;

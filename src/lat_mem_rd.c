@@ -45,7 +45,7 @@ int main(int ac, char **av)
 		case 'P':
 			parallel = atoi(optarg);
 			if (parallel <= 0)
-				lmbench_usage(ac, av, usage);
+				return 0;
 			break;
 		case 'W':
 			warmup = atoi(optarg);
@@ -54,13 +54,13 @@ int main(int ac, char **av)
 			repetitions = atoi(optarg);
 			break;
 		default:
-			lmbench_usage(ac, av, usage);
+			return 0;
 			break;
 		}
 	}
 	if (optind == ac)
 	{
-		lmbench_usage(ac, av, usage);
+		return 0;
 	}
 
 	// Length multiplied to be MB

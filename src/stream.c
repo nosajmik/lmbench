@@ -67,11 +67,11 @@ main(int ac, char **av)
 		case 'v':
 			version = atoi(optarg);
 			if (version != 1 && version != 2) 
-				lmbench_usage(ac, av, usage);
+				return 0;
 			break;
 		case 'P':
 			parallel = atoi(optarg);
-			if (parallel <= 0) lmbench_usage(ac, av, usage);
+			if (parallel <= 0) return 0;
 			break;
 		case 'M':
 			state.len = bytes(optarg);
@@ -83,7 +83,7 @@ main(int ac, char **av)
 			repetitions = atoi(optarg);
 			break;
 		default:
-			lmbench_usage(ac, av, usage);
+			return 0;
 			break;
 		}
 	}

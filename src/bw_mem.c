@@ -73,7 +73,7 @@ main(int ac, char **av)
 		switch(c) {
 		case 'P':
 			parallel = atoi(optarg);
-			if (parallel <= 0) lmbench_usage(ac, av, usage);
+			if (parallel <= 0) return 0;
 			break;
 		case 'W':
 			warmup = atoi(optarg);
@@ -82,7 +82,7 @@ main(int ac, char **av)
 			repetitions = atoi(optarg);
 			break;
 		default:
-			lmbench_usage(ac, av, usage);
+			return 0;
 			break;
 		}
 	}
@@ -92,12 +92,12 @@ main(int ac, char **av)
 	if (optind + 3 == ac) {
 		state.aligned = 1;
 	} else if (optind + 2 != ac) {
-		lmbench_usage(ac, av, usage);
+		return 0;
 	}
 
 	nbytes = state.nbytes = bytes(av[optind]);
 	if (state.nbytes < 512) { /* this is the number of bytes in the loop */
-		lmbench_usage(ac, av, usage);
+		return 0;
 	}
 
 	if (streq(av[optind+1], "cp") ||
@@ -133,7 +133,7 @@ main(int ac, char **av)
 		benchmp(init_loop, loop_bcopy, cleanup, 0, parallel, 
 			warmup, repetitions, &state);
 	} else {
-		lmbench_usage(ac, av, usage);
+		return 0;
 	}
 	adjusted_bandwidth(gettime(), nbytes, 
 			   get_n() * parallel, state.overhead);

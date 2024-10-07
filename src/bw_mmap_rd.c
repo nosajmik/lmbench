@@ -61,7 +61,7 @@ main(int ac, char **av)
 		switch(c) {
 		case 'P':
 			parallel = atoi(optarg);
-			if (parallel <= 0) lmbench_usage(ac, av, usage);
+			if (parallel <= 0) return 0;
 			break;
 		case 'W':
 			warmup = atoi(optarg);
@@ -73,14 +73,14 @@ main(int ac, char **av)
 			state.clone = 1;
 			break;
 		default:
-			lmbench_usage(ac, av, usage);
+			return 0;
 			break;
 		}
 	}
 
 	/* should have three arguments left (bytes type filename) */
 	if (optind + 3 != ac) {
-		lmbench_usage(ac, av, usage);
+		return 0;
 	}
 
 	nbytes = state.nbytes = bytes(av[optind]);
@@ -99,7 +99,7 @@ main(int ac, char **av)
 		benchmp(init_open, time_no_open, cleanup,
 			0, parallel, warmup, repetitions, &state);
 	} else {
-		lmbench_usage(ac, av, usage);
+		return 0;
 	}
 	bandwidth(nbytes, get_n() * parallel, 0);
 	return (0);

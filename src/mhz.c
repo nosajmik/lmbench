@@ -489,7 +489,7 @@ main(int ac, char **av)
 			print_data(mhz, data_save);
 			break;
 		default:
-			lmbench_usage(ac, av, usage);
+			return 0;
 			break;
 		}
 	}

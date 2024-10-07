@@ -150,7 +150,7 @@ main(int argc, char *argv[])
 			break;
 		case 'P':
 			parallel = atoi(optarg);
-			if (parallel <= 0) lmbench_usage(argc, argv, usage);
+			if (parallel <= 0) return 0;
 			break;
 		case 'W':
 			warmup = atoi(optarg);
@@ -159,14 +159,14 @@ main(int argc, char *argv[])
 			repetitions = atoi(optarg);
 			break;
 		default:
-			lmbench_usage(argc, argv, usage);
+			return 0;
 			break;
 		}
 	}
 	if (optind == argc - 1) {
 		state.bytes = bytes(argv[optind]);
 	} else if (optind < argc - 1) {
-		lmbench_usage(argc, argv, usage);
+		return 0;
 	}
 
 	state.pid = 0;

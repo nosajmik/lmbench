@@ -201,12 +201,12 @@ main(int ac, char **av)
 		what = ITIMER;
 		mechanism = "itimer";
 	    } else {
-		lmbench_usage(ac, av, usage);
+		return 0;
 	    }
 	    break;
 	case 'P':
 	    parallel = atoi(optarg);
-	    if (parallel <= 0) lmbench_usage(ac, av, usage);
+	    if (parallel <= 0) return 0;
 	    break;
 	case 'W':
 	    warmup = atoi(optarg);
@@ -215,12 +215,12 @@ main(int ac, char **av)
 	    repetitions = atoi(optarg);
 	    break;
 	default:
-	    lmbench_usage(ac, av, usage);
+	    return 0;
 	    break;
 	}
     }
     if (optind != ac - 1) {
-	lmbench_usage(ac, av, usage);
+	return 0;
     }
 
     state.usecs = bytes(av[optind]);
@@ -250,7 +250,7 @@ main(int ac, char **av)
 		0, parallel, warmup, repetitions, &state);
 	break;
     default:
-	lmbench_usage(ac, av, usage);
+	return 0;
 	break;
     }
     sprintf(buf, "%s%s %lu microseconds", scheduler, mechanism, state.usecs);

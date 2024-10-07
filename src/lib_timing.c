@@ -1623,7 +1623,7 @@ bread(void* buf, long nbytes)
 void
 touch(char *buf, int nbytes)
 {
-	static	psize;
+	static int psize;
 
 	if (!psize) {
 		psize = getpagesize();

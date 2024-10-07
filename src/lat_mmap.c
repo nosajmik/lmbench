@@ -55,7 +55,7 @@ main(int ac, char **av)
 		case 'P':
 			parallel = atoi(optarg);
 			if (parallel <= 0)
-				lmbench_usage(ac, av, usage);
+				return 0;
 			break;
 		case 'W':
 			warmup = atoi(optarg);
@@ -70,13 +70,13 @@ main(int ac, char **av)
 			state.clone = 1;
 			break;
 		default:
-			lmbench_usage(ac, av, usage);
+			return 0;
 			break;
 		}
 	}
 
 	if (optind + 2 != ac) {
-		lmbench_usage(ac, av, usage);
+		return 0;
 	}
 
 	state.size = bytes(av[optind]);

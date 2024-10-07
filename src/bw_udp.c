@@ -81,13 +81,13 @@ main(int ac, char **av)
 			repetitions = atoi(optarg);
 			break;
 		default:
-			lmbench_usage(ac, av, usage);
+			return 0;
 			break;
 		}
 	}
 
 	if (optind < ac - 2 || optind >= ac) {
-		lmbench_usage(ac, av, usage);
+		return 0;
 	}
 
 	state.server = av[optind++];
