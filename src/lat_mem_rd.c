@@ -16,10 +16,9 @@ char *id = "$Id: s.lat_mem_rd.c 1.13 98/06/30 16:13:49-07:00 lm@lm.bitmover.com 
 
 #include "bench.h"
 #define STRIDE (512 / sizeof(char *)) // Defaults to 64
-#define LOWER 512 // Minimum buffer size is 512 B
+#define LOWER 512					  // Minimum buffer size is 512 B
 void loads(size_t len, size_t range, size_t stride,
 		   int parallel, int warmup, int repetitions);
-size_t step(size_t k);
 void initialize(iter_t iterations, void *cookie);
 
 benchmp_f fpInit = stride_initialize;
@@ -75,7 +74,7 @@ int main(int ac, char **av)
 		// bytes to the max length specified in the args.
 		fprintf(stderr, "Stride: %d\n", STRIDE);
 
-		for (range = LOWER; range <= len; range = step(range))
+		for (range = LOWER; range <= len; range *= 2)
 		{
 			loads(len, range, STRIDE, parallel,
 				  warmup, repetitions);
@@ -93,9 +92,9 @@ int main(int ac, char **av)
 		{
 			stride = bytes(av[i]);
 			fprintf(stderr, "\"stride=%d\n", stride);
-			
+
 			// The inner loop is the array size.
-			for (range = LOWER; range <= len; range = step(range))
+			for (range = LOWER; range <= len; range *= 2)
 			{
 				loads(len, range, stride, parallel,
 					  warmup, repetitions);
@@ -165,26 +164,4 @@ void loads(size_t len, size_t range, size_t stride,
 	save_minimum();
 	result = (1000. * (double)gettime()) / (double)(count * get_n());
 	fprintf(stderr, "Buffer size: %.5f MB, Avg. Load Latency: %.3f ns\n", range / (1024. * 1024.), result);
-}
-
-size_t
-step(size_t k)
-{
-	if (k < 1024)
-	{
-		k = k * 2;
-	}
-	else if (k < 4 * 1024)
-	{
-		k += 1024;
-	}
-	else
-	{
-		size_t s;
-
-		for (s = 32 * 1024; s <= k; s *= 2)
-			;
-		k += s / 16;
-	}
-	return (k);
 }
