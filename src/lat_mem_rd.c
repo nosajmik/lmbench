@@ -16,7 +16,7 @@ char *id = "$Id: s.lat_mem_rd.c 1.13 98/06/30 16:13:49-07:00 lm@lm.bitmover.com 
 
 #include "bench.h"
 #define STRIDE (512 / sizeof(char *)) // Defaults to 64
-#define LOWER 512					  // Minimum buffer size is 512 B
+#define LOWER 16 * 1024	// Minimum buffer size is 16 KB
 void loads(size_t len, size_t range, size_t stride,
 		   int parallel, int warmup, int repetitions);
 void initialize(iter_t iterations, void *cookie);
@@ -163,5 +163,5 @@ void loads(size_t len, size_t range, size_t stride,
 	/* We want to get to nanoseconds / load. */
 	save_minimum();
 	result = (1000. * (double)gettime()) / (double)(count * get_n());
-	fprintf(stderr, "Buffer size: %.5f MB, Avg. Load Latency: %.3f ns\n", range / (1024. * 1024.), result);
+	fprintf(stderr, "Buffer size: %d KB, Avg. Load Latency: %.3f ns\n", range / 1024, result);
 }
