@@ -163,5 +163,6 @@ void loads(size_t len, size_t range, size_t stride,
 	/* We want to get to nanoseconds / load. */
 	save_minimum();
 	result = (1000. * (double)gettime()) / (double)(count * get_n());
-	fprintf(stderr, "Buffer size: %d KB, Avg. Load Latency: %.3f ns\n", range / 1024, result);
+	// fprintf(stderr, "Buffer size: %d KB, Avg. Load Latency: %.3f ns\n", range / 1024, result);
+	fprintf(stderr, "%d, %.3f\n", range / 1024, result);
 }
