@@ -193,13 +193,19 @@ stride_initialize(iter_t iterations, void* cookie)
 	size_t	stride = state->line;
 	char*	addr;
 
+	// This is just a malloc wrapper
 	base_initialize(iterations, cookie);
 	if (!state->initialized) return;
 	addr = state->base;
 
+	// The linked list is set up as a backwards-stride
+	// pointer chase. So, chasing the pointers leads to
+	// accessing the buffer backwards in a striding manner...
 	for (i = stride; i < range; i += stride) {
 		*(char **)&addr[i - stride] = (char*)&addr[i];
 	}
+
+	// And also in a circular manner.
 	*(char **)&addr[i - stride] = (char*)&addr[0];
 	state->p[0] = addr;
 	mem_reset();

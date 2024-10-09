@@ -150,14 +150,14 @@ int
 sizeof_result(int repetitions);
 
 void 
-benchmp(benchmp_f initialize, 
-	benchmp_f benchmark,
+benchmp(benchmp_f initialize, // stride_initialize
+	benchmp_f benchmark, // benchmark_loads
 	benchmp_f cleanup,
-	int enough, 
-	int parallel,
-	int warmup,
-	int repetitions,
-	void* cookie)
+	int enough, // 100000
+	int parallel, // 1
+	int warmup, // 0
+	int repetitions, // 11
+	void* cookie) // mem_state state
 {
 	iter_t		iterations = 1;
 	double		result = 0.;
@@ -185,6 +185,7 @@ benchmp(benchmp_f initialize,
 	settime(0);
 	save_n(1);
 
+	// This does not run by default because parallel == 1
 	if (parallel > 1) {
 		/* Compute the baseline performance */
 		benchmp(initialize, benchmark, cleanup, 
@@ -221,6 +222,8 @@ benchmp(benchmp_f initialize,
 	benchmp_sigterm_received = 0;
 	benchmp_sigterm_handler = signal(SIGTERM, benchmp_sigterm);
 	benchmp_sigchld_handler = signal(SIGCHLD, benchmp_sigchld);
+
+	// pids only has one entry because parallel == 1
 	pids = (pid_t*)malloc(parallel * sizeof(pid_t));
 	if (!pids) return;
 	bzero((void*)pids, parallel * sizeof(pid_t));
@@ -245,6 +248,8 @@ benchmp(benchmp_f initialize,
 			close(result_signal[1]);
 			close(exit_signal[1]);
 			handle_scheduler(i, 0, 0);
+
+			// What does the child do here? -nosajmik
 			benchmp_child(initialize, 
 				      benchmark, 
 				      cleanup, 
@@ -268,6 +273,10 @@ benchmp(benchmp_f initialize,
 	close(start_signal[0]);
 	close(result_signal[0]);
 	close(exit_signal[0]);
+
+	// benchmark = benchmark_loads is not used here.
+	// Perhaps child runs the actual test and parent
+	// performs measurements.
 	benchmp_parent(response[0], 
 		       start_signal[1], 
 		       result_signal[1], 
@@ -330,11 +339,11 @@ benchmp_parent(	int response,
 		int result_signal, 
 		int exit_signal,
 		pid_t* pids,
-		int parallel, 
-	        iter_t iterations,
-		int warmup,
-		int repetitions,
-		int enough
+		int parallel, // 1
+	        iter_t iterations, // 1
+		int warmup, // 0
+		int repetitions, // 11
+		int enough // 100000
 		)
 {
 	int		i,j,k,l;
@@ -392,6 +401,7 @@ benchmp_parent(	int response,
 	}
 
 	/* let the children run for warmup microseconds */
+	// This does not run because warmup == 0
 	if (warmup > 0) {
 		struct timeval delay;
 		delay.tv_sec = warmup / 1000000;
@@ -580,22 +590,22 @@ benchmp_getstate()
 }
 
 void 
-benchmp_child(benchmp_f initialize, 
-		benchmp_f benchmark,
+benchmp_child(benchmp_f initialize, // stride_initialize
+		benchmp_f benchmark, // benchmark_loads
 		benchmp_f cleanup,
 		int childid,
 		int response, 
 		int start_signal, 
 		int result_signal, 
 		int exit_signal,
-		int enough,
-	        iter_t iterations,
-		int parallel, 
-	        int repetitions,
-		void* cookie
+		int enough, // 100000
+	        iter_t iterations, // 1
+		int parallel, // 1
+	        int repetitions, // 11
+		void* cookie // mem_state state
 		)
 {
-	iter_t		iterations_batch = (parallel > 1) ? get_n() : 1;
+	iter_t		iterations_batch = (parallel > 1) ? get_n() : 1; // 1
 	double		result = 0.;
 	double		usecs;
 	long		i = 0;
@@ -620,7 +630,7 @@ benchmp_child(benchmp_f initialize,
 	_benchmp_child_state.cookie = cookie;
 	_benchmp_child_state.need_warmup = 1;
 	_benchmp_child_state.i = 0;
-	_benchmp_child_state.r_size = sizeof_result(repetitions);
+	_benchmp_child_state.r_size = sizeof_result(repetitions); // 11
 	_benchmp_child_state.r = (result_t*)malloc(_benchmp_child_state.r_size);
 
 	if (!_benchmp_child_state.r) return;
@@ -637,6 +647,9 @@ benchmp_child(benchmp_f initialize,
 		signal(SIGCHLD, benchmp_child_sigchld);
 	}
 
+	// stride_initialize is called here. Need to see
+	// what this does to state->p[0], the first node
+	// in the linked list chase.
 	if (initialize)
 		(*initialize)(0, cookie);
 	
@@ -651,6 +664,7 @@ benchmp_child(benchmp_f initialize,
 	/* start experiments, collecting results */
 	insertinit(_benchmp_child_state.r);
 
+	// benchmark_loads is called here
 	while (1) {
 		(*benchmark)(benchmp_interval(&_benchmp_child_state), cookie);
 	}
@@ -666,12 +680,13 @@ benchmp_interval(void* _state)
 	struct timeval	timeout;
 	benchmp_child_state* state = (benchmp_child_state*)_state;
 
-	iterations = (state->state == timing_interval ? state->iterations : state->iterations_batch);
+	iterations = (state->state == timing_interval ? state->iterations : state->iterations_batch); // 11
 
 	if (!state->need_warmup) {
 		result = stop(0,0);
 		if (state->cleanup) {
 			if (benchmp_sigchld_handler == SIG_DFL)
+				// I guess the while-loop gets broken here.
 				signal(SIGCHLD, SIG_DFL);
 			(*state->cleanup)(iterations, state->cookie);
 		}
@@ -694,6 +709,8 @@ benchmp_interval(void* _state)
 
 	switch (state->state) {
 	case warmup:
+		// Just looks like a delay function before running
+		// experiment on child process.
 		iterations = state->iterations_batch;
 		FD_SET(state->start_signal, &fds);
 		select(state->start_signal+1, &fds, NULL,
@@ -710,7 +727,7 @@ benchmp_interval(void* _state)
 		}
 		break;
 	case timing_interval:
-		iterations = state->iterations;
+		iterations = state->iterations; // 1
 		if (state->parallel > 1 || result > 0.95 * state->enough) {
 			insertsort(gettime(), get_n(), get_results());
 			state->i++;
@@ -754,6 +771,7 @@ benchmp_interval(void* _state)
 			read(state->result_signal, (void*)&c, sizeof(char));
 			write(state->response, (void*)get_results(), state->r_size);
 			if (state->cleanup) {
+				// Another break for the while-loop
 				if (benchmp_sigchld_handler == SIG_DFL)
 					signal(SIGCHLD, SIG_DFL);
 				(*state->cleanup)(0, state->cookie);
